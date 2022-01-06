@@ -1,5 +1,6 @@
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { ethers } from "ethers";
+import { SUPPORTED_CHAINS } from "../config/constants/chains";
 
 export const getLibrary = (
   provider:
@@ -11,5 +12,5 @@ export const getLibrary = (
 };
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [1, 3, 4, 5, 42],
+  supportedChainIds: SUPPORTED_CHAINS,
 });

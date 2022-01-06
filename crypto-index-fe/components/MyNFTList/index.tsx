@@ -8,22 +8,40 @@ const MyNFTList = () => {
   const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
   const { NFTs } = useFetchNFTs(contract?.balanceOf, true);
 
-  const burnNft = async (nftId: number) => {
-    if (contract?.burnNFT) {
-      const promise = contract.burnNFT(nftId, false);
+  // useEffect(() => {
+  //   contract
+  //     ?.approve("0x8b0d39446578de54ab59b95c744d44440fa632e5", 0)
+  //     .then((address: any) => console.log("address", address));
+  // }, [contract]);
 
-      promise
-        .then((result: any) => {
-          console.log(result);
-          console.log("BURN!!");
-        })
-        .catch((error: object) => {
-          console.log(error);
-        });
+  const burnNft = async (nftId: number, convertToStableCoin: boolean) => {
+    if (contract?.burnNFT && nftId) {
+      const response = await contract.burnNFT(nftId, convertToStableCoin);
+      const waiter = await response.wait();
+      if (waiter.confirmations >= 2) console.log("BURNED!!");
     }
   };
 
-  return <div>{<List title="My NFTs" nfts={NFTs} burnNFT={burnNft} />}</div>;
+  const setTokenColor = async (nftId: number, tokenColor: string) => {
+    if (contract?.burnNFT && nftId && tokenColor) {
+      const response = await contract.setTokenColor(nftId, tokenColor);
+      const waiter = await response.wait();
+      if (waiter.confirmations >= 2) console.log("NFT color set!!");
+    }
+  };
+
+  return (
+    <div>
+      {
+        <List
+          title="My NFTs"
+          nfts={NFTs}
+          burnNFT={burnNft}
+          setTokenColor={setTokenColor}
+        />
+      }
+    </div>
+  );
 };
 
 export default MyNFTList;

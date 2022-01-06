@@ -6,7 +6,7 @@ import { BigNumberish } from "@ethersproject/bignumber";
 
 const Wallet = () => {
   const [balance, setBalance] = useState<BigNumberish>("");
-  const { activate, account, library, active, chainId } = useWeb3React();
+  const { activate, account, library, active } = useWeb3React();
 
   useEffect(() => {
     if (!active) {
@@ -15,20 +15,14 @@ const Wallet = () => {
   }, [active, activate]);
 
   useEffect(() => {
-    if (!!account && !!library) {
-      let stale = false;
-
-      library.getBalance(account).then((balance: BigNumberish) => {
-        if (!stale) {
-          setBalance(balance);
-        }
-      });
-
-      return () => {
-        setBalance("");
-      };
-    }
-  }, [account, library, chainId]);
+    (async () => {
+      if (account && library) {
+        const balance: BigNumberish = await library.getBalance(account);
+        setBalance(balance);
+        return () => setBalance("");
+      }
+    })();
+  }, [account, library]);
 
   return (
     <div>
