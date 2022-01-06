@@ -8,14 +8,20 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Router.sol";
 
 contract IndexNFT is ERC721, ERC721Enumerable, Ownable {
+    enum Color {
+        Black,
+        White,
+        Green,
+        Yellow
+    }
     uint256 internal constant INDEX_VALUE = 50000000000000000 wei;
     uint256 internal constant COMP_Index_value = 0.05 ether;
     uint256 internal constant SNX_Index_value = 0.05 ether;
     address internal constant UNISWAP_ROUTER_ADDRESS =
         0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     uint256 token_id_count;
-    uint256 minted_tokens;
-    string token_uri;
+    mapping(uint256 => Color) public token_color;
+    mapping(Color => string) public color_uri;
 
     Router router = Router(UNISWAP_ROUTER_ADDRESS);
     ERC20 COMP_token = ERC20(0x61460874a7196d6a22D1eE4922473664b3E95270);
@@ -24,14 +30,21 @@ contract IndexNFT is ERC721, ERC721Enumerable, Ownable {
 
     constructor() ERC721("Crypto Index", "CI") {}
 
-    function burnNFT(uint256 tokenId, bool convertToStableCoin) public {
+    modifier onlyOwnerOfToken(uint256 tokenId) {
         require(ownerOf(tokenId) == msg.sender, "Sender must be owner");
+        _;
+    }
+
+    function burnNFT(uint256 tokenId, bool convertToStableCoin)
+        public
+        onlyOwnerOfToken(tokenId)
+    {
         require(
-            COMP_token.balanceOf(address(this)) >= INDEX_VALUE * minted_tokens,
+            COMP_token.balanceOf(address(this)) >= INDEX_VALUE * totalSupply(),
             "Insufficient COMP"
         );
         require(
-            SNX_token.balanceOf(address(this)) >= INDEX_VALUE * minted_tokens,
+            SNX_token.balanceOf(address(this)) >= INDEX_VALUE * totalSupply(),
             "Insufficient SNX"
         );
         if (convertToStableCoin) {
@@ -42,23 +55,21 @@ contract IndexNFT is ERC721, ERC721Enumerable, Ownable {
             SNX_token.transfer(ownerOf(tokenId), SNX_Index_value);
         }
         _burn(tokenId);
-        minted_tokens -= 1;
     }
 
     function mint() public onlyOwner {
         require(
             COMP_token.balanceOf(address(this)) >=
-                INDEX_VALUE * (minted_tokens + 1),
+                INDEX_VALUE * (totalSupply() + 1),
             "Insufficient COMP"
         );
         require(
             SNX_token.balanceOf(address(this)) >=
-                INDEX_VALUE * (minted_tokens + 1),
+                INDEX_VALUE * (totalSupply() + 1),
             "Insufficient SNX"
         );
         _mint(msg.sender, token_id_count);
         token_id_count += 1;
-        minted_tokens += 1;
     }
 
     function swapSNXToDAI() private {
@@ -95,23 +106,35 @@ contract IndexNFT is ERC721, ERC721Enumerable, Ownable {
         );
     }
 
-    function tokenURI(uint256 token_id)
+    function tokenURI(uint256 tokenId)
         public
         view
         virtual
         override
         returns (string memory)
     {
-        require(
-            _exists(token_id),
-            "ERC721Metadata: URI query for nonexistent token"
-        );
-
-        return token_uri;
+        require(_exists(tokenId), "Token doesn't exist");
+        if (abi.encodePacked(color_uri[token_color[tokenId]]).length > 0) {
+            return color_uri[token_color[tokenId]];
+        } else if (abi.encodePacked(color_uri[Color.Black]).length > 0) {
+            return color_uri[Color.Black];
+        } else {
+            return "";
+        }
     }
 
-    function setTokenURI(string memory new_uri) public onlyOwner {
-        token_uri = new_uri;
+    function setTokenURIs(string[] memory uris) public onlyOwner {
+        color_uri[Color.Black] = uris[0];
+        color_uri[Color.White] = uris[1];
+        color_uri[Color.Green] = uris[2];
+        color_uri[Color.Yellow] = uris[3];
+    }
+
+    function setTokenColor(uint256 tokenId, Color color)
+        public
+        onlyOwnerOfToken(tokenId)
+    {
+        token_color[tokenId] = color;
     }
 
     function supportsInterface(bytes4 interfaceId)
