@@ -1,89 +1,40 @@
-import Image from "next/image";
-import { ChangeEvent, FC, useState } from "react";
+import { ReactNode } from "react";
+import { FC } from "react";
 import { NFTMetadata } from "../../../types/NFT";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@mui/material";
 
 interface ItemProps {
   nft: NFTMetadata;
-  burnNFT?: (id: number, receiveTokens: boolean) => {};
-  setTokenColor?: (id: number, tokenColor: string) => {};
+  renderChildren?: (nft: NFTMetadata) => ReactNode;
 }
 
-const radioButtonsValue = {
-  dai: "Dai",
-  tokens: "Tokens",
-};
-
-const Item: FC<ItemProps> = ({ nft, burnNFT, setTokenColor }) => {
-  const { id, image, name, description } = nft;
-  const { dai, tokens } = radioButtonsValue;
-  const [burnRewardsType, setBurnRewardsType] = useState(
-    radioButtonsValue.tokens
-  );
-  const [selectedColor, setSelectedColor] = useState("");
-
-  const handleRadioButtonChange = (e: ChangeEvent<{ value: string }>) => {
-    setBurnRewardsType(e.target.value);
-  };
-
-  const handleSelectChange = (e: ChangeEvent<{ value: string }>) => {
-    const { value } = e.target;
-    if (value) {
-      setSelectedColor(value);
-    }
-  };
+const Item: FC<ItemProps> = ({ nft, renderChildren }) => {
+  const { image, name, description } = nft;
 
   return (
-    <div>
-      <div>{name}</div>
-      <Image
-        unoptimized
-        loader={() => image}
-        src={image}
-        alt="NFT"
-        width="250"
-        height="250"
+    <Card sx={{ maxWidth: 345 }}>
+      <CardMedia
+        component="img"
+        height="220"
+        image={image}
+        alt="green iguana"
       />
-      <div>{description}</div>
-      {burnNFT && (
-        <>
-          <input
-            value={tokens}
-            checked={burnRewardsType === tokens}
-            onChange={handleRadioButtonChange}
-            type="radio"
-          />
-          <label>Get NFT tokens</label>
-          <input
-            value={dai}
-            checked={burnRewardsType === dai}
-            onChange={handleRadioButtonChange}
-            type="radio"
-          />
-          <label>Get DAI</label>
-          <button onClick={() => burnNFT(id, burnRewardsType === dai)}>
-            Burn NFT
-          </button>
-        </>
-      )}
-      {setTokenColor && (
-        <div>
-          <select value={selectedColor} onChange={handleSelectChange}>
-            <option value="">--Please choose a color--</option>
-            <option value={0}>Black</option>
-            <option value={1}>White</option>
-            <option value={2}>Green</option>
-            <option value={3}>Yellow</option>
-          </select>
-          <button
-            onClick={() => setTokenColor(id, selectedColor)}
-            type="submit"
-            value="Submit"
-          >
-            Select color
-          </button>
-        </div>
-      )}
-    </div>
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {name}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {description}
+        </Typography>
+      </CardContent>
+      <CardActions>{renderChildren && renderChildren(nft)}</CardActions>
+    </Card>
   );
 };
 

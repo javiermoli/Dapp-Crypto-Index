@@ -1,35 +1,71 @@
-import CryptoIndexMarketplaceAbi from "../../../config/abi/Marketplace.json";
-import { useContract } from "../../../hooks/useContract";
-import List from "../../Common/NFTList/List";
-import useFetchNFTs from "../../../hooks/useFetchNFTs";
 import { CRYPTO_INDEX_MARKETPLACE } from "../../../config/constants/contracts";
+import { useContract } from "../../../hooks/useContract";
+import useFetchListedNFT from "../../../hooks/useFetchListedNFT";
+import { buyToken, removeListing } from "../../../utils/calls/nftMarketplace";
+import { formatBigNumber } from "../../../utils/web3";
+import List from "../../Common/NFTList/List";
+import ListedNftCardFooter, { ListedNFTData } from "./ListedNftCardFooter";
+import marketplaceAbi from "../../../config/abi/Marketplace.json";
+import { useContractInteraction } from "../../../hooks/useContractInteraction";
+import { useEffect, useState } from "react";
 
-const MyNFTList = () => {
-  const { contract } = useContract(
-    CRYPTO_INDEX_MARKETPLACE,
-    CryptoIndexMarketplaceAbi
+const MyNFTListM = () => {
+  const [shouldUpdateData, setShouldUpdateData] = useState(0);
+  const { listedNftsMarketplace, isLoading } =
+    useFetchListedNFT(shouldUpdateData);
+  const { contract } = useContract(CRYPTO_INDEX_MARKETPLACE, marketplaceAbi);
+  const [buyTokenCallback, buyingUpdate] = useContractInteraction({
+    loading: "Buying token..",
+    success: "The token has been bought!",
+  });
+  const [removeTokenCallback, removingTokenUpdate] = useContractInteraction({
+    loading: "Removing token..",
+    success: "The token has been removed!",
+  });
+
+  useEffect(() => {
+    (() => {
+      setShouldUpdateData((prevValue) => (prevValue += 1));
+    })();
+  }, [buyingUpdate, removingTokenUpdate, setShouldUpdateData]);
+
+  const handleRemoveToken = async (listedNftData: ListedNFTData) => {
+    if (contract) {
+      const { listing_id } = listedNftData;
+      const tokenListingId = listing_id && formatBigNumber(listing_id);
+
+      removeTokenCallback(removeListing, contract, tokenListingId);
+    }
+  };
+
+  const handleBuyToken = async (listedNftData: ListedNFTData) => {
+    if (contract) {
+      const { listing_id, price } = listedNftData;
+      const tokenListingId = listing_id && formatBigNumber(listing_id);
+      const options = {
+        value: price,
+      };
+
+      buyTokenCallback(buyToken, contract, tokenListingId, options);
+    }
+  };
+
+  const renderCardFooter = (listedNftData: ListedNFTData) => (
+    <ListedNftCardFooter
+      removeToken={handleRemoveToken}
+      buyToken={handleBuyToken}
+      listedNftData={listedNftData}
+    />
   );
-  const { NFTs } = useFetchNFTs(contract?.balanceOf, true);
-
-  //   useEffect(() => {
-  //     contract
-  //       ?.approve("0x8b0d39446578de54ab59b95c744d44440fa632e5", 0)
-  //       .then((address: any) => console.log("address", address));
-  //   }, [contract]);
-
-  //   const burnNft = async (nftId: number, convertToStableCoin: boolean) => {
-  //     if (contract?.burnNFT && nftId) {
-  //       const response = await contract.burnNFT(nftId, convertToStableCoin);
-  //       const waiter = await response.wait();
-  //       if (waiter.confirmations >= 2) console.log("BURNED!!");
-  //     }
-  //   };
 
   return (
-    <div>
-      <List title="My NFTs" nfts={NFTs} />
-    </div>
+    <List
+      isLoading={isLoading}
+      renderChildren={renderCardFooter}
+      title="Listed NFTs"
+      nfts={listedNftsMarketplace}
+    />
   );
 };
 
-export default MyNFTList;
+export default MyNFTListM;

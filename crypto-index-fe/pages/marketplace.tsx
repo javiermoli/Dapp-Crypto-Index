@@ -1,13 +1,12 @@
 import type { NextPage } from "next";
-import Link from "next/link";
-import Wallet from "../components/Wallet/Wallet";
+import styles from "../styles/Home.module.css";
+import MyNFTListM from "../components/Marketplace/ListedNFT";
 
 const marketplace: NextPage = () => {
   return (
-    <>
-      <Wallet />
-      <div>MARKETPLACE!!!</div>
-    </>
+    <div className={styles.container}>
+      <MyNFTListM />
+    </div>
   );
 };
 

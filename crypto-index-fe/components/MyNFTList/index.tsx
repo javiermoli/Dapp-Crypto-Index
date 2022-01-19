@@ -1,46 +1,64 @@
 import { useContract } from "../../hooks/useContract";
-import CryptoIndexAbi from "../../config/abi/IndexNFTNumerable.json";
+import cryptoIndexAbi from "../../config/abi/IndexNFTNumerable.json";
 import { CRYPTO_INDEX } from "../../config/constants/contracts";
 import List from "../Common/NFTList/List";
 import useFetchNFTs from "../../hooks/useFetchNFTs";
+import { NFTMetadata } from "../../types/NFT";
+import CardFooter from "./NFTListItem/NftCardFooter/CardFooter";
+import { useContractInteraction } from "../../hooks/useContractInteraction";
+import { burnNft, setTokenColor } from "../../utils/calls/nftIndex";
+import { useEffect, useState } from "react";
 
 const MyNFTList = () => {
-  const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
-  const { NFTs } = useFetchNFTs(contract?.balanceOf, true);
+  const [shouldUpdateData, setShouldUpdateData] = useState(0);
+  const [burnNftCallback, burningNft] = useContractInteraction({
+    loading: "Burning token...",
+    success: "The token has been burned!",
+  });
+  const [setTokenColorCallback, addingTokenColor] = useContractInteraction({
+    loading: "Adding token color...",
+    success: "The token color has been set!",
+  });
+  const { contract } = useContract(CRYPTO_INDEX, cryptoIndexAbi);
+  const { NFTs, isLoading } = useFetchNFTs(
+    contract?.balanceOf,
+    true,
+    shouldUpdateData
+  );
 
-  // useEffect(() => {
-  //   contract
-  //     ?.approve("0x8b0d39446578de54ab59b95c744d44440fa632e5", 0)
-  //     .then((address: any) => console.log("address", address));
-  // }, [contract]);
+  useEffect(() => {
+    (() => {
+      setShouldUpdateData((prevValue) => (prevValue += 1));
+    })();
+  }, [burningNft, addingTokenColor, setShouldUpdateData]);
 
-  const burnNft = async (nftId: number, convertToStableCoin: boolean) => {
-    if (contract?.burnNFT && nftId) {
-      const response = await contract.burnNFT(nftId, convertToStableCoin);
-      const waiter = await response.wait();
-      if (waiter.confirmations >= 2) console.log("BURNED!!");
+  const handleBurnNft = async (nftId: number, convertToStableCoin: boolean) => {
+    if (contract?.burnNFT && nftId >= 0) {
+      burnNftCallback(burnNft, contract, nftId, convertToStableCoin);
     }
   };
 
-  const setTokenColor = async (nftId: number, tokenColor: string) => {
+  const handleSetTokenColor = async (nftId: number, tokenColor: string) => {
     if (contract?.burnNFT && nftId && tokenColor) {
-      const response = await contract.setTokenColor(nftId, tokenColor);
-      const waiter = await response.wait();
-      if (waiter.confirmations >= 2) console.log("NFT color set!!");
+      setTokenColorCallback(setTokenColor, contract, nftId, tokenColor);
     }
   };
+
+  const renderCardFooter = (nftData: NFTMetadata) => (
+    <CardFooter
+      setTokenColor={handleSetTokenColor}
+      burnNft={handleBurnNft}
+      nftData={nftData}
+    />
+  );
 
   return (
-    <div>
-      {
-        <List
-          title="My NFTs"
-          nfts={NFTs}
-          burnNFT={burnNft}
-          setTokenColor={setTokenColor}
-        />
-      }
-    </div>
+    <List
+      isLoading={isLoading}
+      title="My NFTs"
+      nfts={NFTs}
+      renderChildren={renderCardFooter}
+    />
   );
 };
 

@@ -1,29 +1,37 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, ReactNode, FC } from "react";
 import Header from "./Header";
 import SideBar from "./SideBar";
 import { useRouter } from "next/router";
 
-const NavBar = () => {
+interface NavBarProps {
+  headerChildren?: ReactNode;
+}
+
+const NavBar: FC<NavBarProps> = ({ headerChildren }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
-  const toggleDrawer = () => setIsOpen((value) => !value);
+  const openDrawer = () => setIsOpen(true);
+
+  const closeDrawer = () => setIsOpen(false);
 
   useEffect(() => {
-    router.events.on("routeChangeStart", toggleDrawer);
+    (() => {
+      router.events.on("routeChangeStart", closeDrawer);
+    })();
 
     return () => {
-      router.events.off("routeChangeStart", toggleDrawer);
+      router.events.off("routeChangeStart", closeDrawer);
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div>
-      <Header toggleDrawer={toggleDrawer} />
-      <SideBar toggleDrawer={toggleDrawer} isOpen={isOpen} />
-    </div>
+    <>
+      <Header toggleDrawer={openDrawer}>{headerChildren}</Header>
+      <SideBar toggleDrawer={closeDrawer} isOpen={isOpen} />
+    </>
   );
 };
 

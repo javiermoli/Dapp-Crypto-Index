@@ -34,19 +34,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "listing_id",
-        "type": "uint256"
-      }
-    ],
-    "name": "removeListing",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "index",
         "type": "uint256"
       }
@@ -160,9 +147,27 @@
         "internalType": "uint256",
         "name": "price",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "listing_id",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "listing_id",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeListing",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]
