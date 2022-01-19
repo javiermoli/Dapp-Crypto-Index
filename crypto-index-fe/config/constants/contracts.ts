@@ -1,4 +1,4 @@
-export const CRYPTO_INDEX = "0x2ee82f2FD3bA564F0a43d3a5C9827c70ebe60e90";
+export const CRYPTO_INDEX = "0xBD9cd50fc0183B2512385A73429e3B5e9fC39C87";
 
-export const DEFAULT_URI =
-  "https://github.com/javiermoli/crypto-index/blob/main/crypto-index-metadata.json";
+export const CRYPTO_INDEX_MARKETPLACE =
+  "0xEF6835F39c0ef8c56Ec4BDb3402e8B603173F7B3";

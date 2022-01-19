@@ -1,53 +1,40 @@
-import Image from "next/image";
-import { ChangeEvent, FC, useState } from "react";
+import { ReactNode } from "react";
+import { FC } from "react";
 import { NFTMetadata } from "../../../types/NFT";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@mui/material";
 
 interface ItemProps {
   nft: NFTMetadata;
-  burnNFT?: (id: number, receiveTokens: boolean) => {};
+  renderChildren?: (nft: NFTMetadata) => ReactNode;
 }
 
-const Item: FC<ItemProps> = ({ nft, burnNFT }) => {
-  const [burnRewardsType, setBurnRewardsType] = useState("tokens");
-
-  const handleRadioButtonChange = (event: ChangeEvent<{ value: string }>) => {
-    setBurnRewardsType(event.target.value);
-  };
+const Item: FC<ItemProps> = ({ nft, renderChildren }) => {
+  const { image, name, description } = nft;
 
   return (
-    <div>
-      <div>{nft.name}</div>
-      <Image
-        unoptimized
-        loader={() => nft.image}
-        src={nft.image}
-        alt="NFT"
-        width="250"
-        height="250"
+    <Card sx={{ maxWidth: 345 }}>
+      <CardMedia
+        component="img"
+        height="220"
+        image={image}
+        alt="green iguana"
       />
-      <div>{nft.description}</div>
-      {burnNFT && (
-        <>
-          <input
-            value="tokens"
-            checked={burnRewardsType === "tokens"}
-            onChange={handleRadioButtonChange}
-            type="radio"
-          />
-          <label>Get NFT tokens</label>
-          <input
-            value="toDai"
-            checked={burnRewardsType === "toDai"}
-            onChange={handleRadioButtonChange}
-            type="radio"
-          />
-          <label>Get DAI</label>
-          <button onClick={() => burnNFT(nft.id, burnRewardsType === "toDai")}>
-            Burn NFT
-          </button>
-        </>
-      )}
-    </div>
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {name}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {description}
+        </Typography>
+      </CardContent>
+      <CardActions>{renderChildren && renderChildren(nft)}</CardActions>
+    </Card>
   );
 };
 

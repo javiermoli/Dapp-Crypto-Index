@@ -195,12 +195,30 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "new_uri",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum IndexNFT.Color",
+        "name": "color",
+        "type": "uint8"
       }
     ],
-    "name": "setTokenURI",
+    "name": "setTokenColor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string[]",
+        "name": "uris",
+        "type": "string[]"
+      }
+    ],
+    "name": "setTokenURIs",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -280,6 +298,25 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IndexNFT.Color",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "name": "color_uri",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -409,6 +446,25 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "token_color",
+    "outputs": [
+      {
+        "internalType": "enum IndexNFT.Color",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "index",
         "type": "uint256"
       }
@@ -452,7 +508,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "token_id",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],

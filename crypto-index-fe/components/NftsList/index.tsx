@@ -6,9 +6,11 @@ import useFetchNFTs from "../../hooks/useFetchNFTs";
 
 const NftsList = () => {
   const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
-  const { NFTs } = useFetchNFTs(contract?.totalSupply, false);
+  const { NFTs, isLoading } = useFetchNFTs(contract?.totalSupply, false);
 
-  return <div>{<List title="Total NFTs" nfts={NFTs} />}</div>;
+  return (
+    <div>{<List isLoading={isLoading} title="Total NFTs" nfts={NFTs} />}</div>
+  );
 };
 
 export default NftsList;
