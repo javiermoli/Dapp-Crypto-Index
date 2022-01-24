@@ -21,21 +21,23 @@ const Mint = () => {
   };
 
   return (
-    isOwner && (
-      <Box sx={{ margin: "20px 0" }}>
-        <Typography variant="h6" component="h2">
-          Mint new NFT!
-        </Typography>
-        <Button
-          sx={{ margin: "10px 0 10px 0" }}
-          variant="contained"
-          disabled={!isOwner}
-          onClick={mintNft}
-        >
-          Mint NFT
-        </Button>
-      </Box>
-    )
+    <>
+      {isOwner && (
+        <Box sx={{ margin: "20px 0" }}>
+          <Typography variant="h6" component="h2">
+            Mint new NFT!
+          </Typography>
+          <Button
+            sx={{ margin: "10px 0 10px 0" }}
+            variant="contained"
+            disabled={!isOwner}
+            onClick={mintNft}
+          >
+            Mint NFT
+          </Button>
+        </Box>
+      )}
+    </>
   );
 };
 

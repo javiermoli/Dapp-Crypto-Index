@@ -62,64 +62,66 @@ const AddURIs = () => {
   };
 
   return (
-    isOwner && (
-      <Box
-        sx={{
-          marginTop: "20px",
-        }}
-      >
-        <Typography variant="h6" component="h2">
-          Add NFTs metadata
-        </Typography>
+    <>
+      {isOwner && (
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            margin: "10px 0 10px 0",
+            marginTop: "20px",
           }}
         >
-          <TextField
-            sx={textStyle}
-            name={black}
-            value={uris.black}
-            onChange={handleRadioButtonChange}
-            type="text"
-            placeholder="Black URI"
-            helperText="Black NFT Metadata"
-          />
-          <TextField
-            sx={textStyle}
-            name={white}
-            value={uris.white}
-            onChange={handleRadioButtonChange}
-            type="text"
-            placeholder="White URI"
-            helperText="White NFT Metadata"
-          />
-          <TextField
-            sx={textStyle}
-            name={green}
-            value={uris.green}
-            onChange={handleRadioButtonChange}
-            type="text"
-            placeholder="Green URI"
-            helperText="Green NFT Metadata"
-          />
-          <TextField
-            sx={textStyle}
-            name={yellow}
-            value={uris.yellow}
-            onChange={handleRadioButtonChange}
-            type="text"
-            placeholder="Yellow URI"
-            helperText="Yellow NFT Metadata"
-          />
+          <Typography variant="h6" component="h2">
+            Add NFTs metadata
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              margin: "10px 0 10px 0",
+            }}
+          >
+            <TextField
+              sx={textStyle}
+              name={black}
+              value={uris.black}
+              onChange={handleRadioButtonChange}
+              type="text"
+              placeholder="Black URI"
+              helperText="Black NFT Metadata"
+            />
+            <TextField
+              sx={textStyle}
+              name={white}
+              value={uris.white}
+              onChange={handleRadioButtonChange}
+              type="text"
+              placeholder="White URI"
+              helperText="White NFT Metadata"
+            />
+            <TextField
+              sx={textStyle}
+              name={green}
+              value={uris.green}
+              onChange={handleRadioButtonChange}
+              type="text"
+              placeholder="Green URI"
+              helperText="Green NFT Metadata"
+            />
+            <TextField
+              sx={textStyle}
+              name={yellow}
+              value={uris.yellow}
+              onChange={handleRadioButtonChange}
+              type="text"
+              placeholder="Yellow URI"
+              helperText="Yellow NFT Metadata"
+            />
+          </Box>
+          <Button variant="contained" disabled={!isOwner} onClick={addURI}>
+            Add URIs
+          </Button>
         </Box>
-        <Button variant="contained" disabled={!isOwner} onClick={addURI}>
-          Add URIs
-        </Button>
-      </Box>
-    )
+      )}
+    </>
   );
 };
 
