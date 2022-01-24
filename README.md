@@ -6,4 +6,6 @@
 - Only the owner of the NFT can burn it.
 - The nft can be sold on the market.
 
+Only the Kovan test net is supported.
+
 https://dapp-crypto-index-ftso0byys-javiermoli.vercel.app
