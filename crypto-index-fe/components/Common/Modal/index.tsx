@@ -9,10 +9,10 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: "#9e9e9e",
-  border: "2px solid #000",
+  bgcolor: "white",
   boxShadow: 24,
   p: 4,
+  borderRadius: "5px",
 };
 
 interface ModalComponentProps {
@@ -27,7 +27,7 @@ const ModalComponent: FC<ModalComponentProps> = ({
   isOpen,
 }) => {
   return (
-    <Modal open={isOpen} onClose={handleClose}>
+    <Modal sx={{ textAlign: "center" }} open={isOpen} onClose={handleClose}>
       <Box sx={style}>{children}</Box>
     </Modal>
   );

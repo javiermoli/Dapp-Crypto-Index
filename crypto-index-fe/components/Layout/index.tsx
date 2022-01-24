@@ -2,17 +2,19 @@ import React, { FC, ReactNode } from "react";
 import SnackbarListener from "../../contexts/SnackbarContext/SnackbarListener";
 import NavBar from "../Common/NavBar";
 import Wallet from "../Wallet/Wallet";
+import styles from "../../styles/Home.module.css";
+import { Box } from "@mui/material";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 const Layout: FC<LayoutProps> = ({ children }) => (
-  <>
+  <Box sx={{ backgroundColor: "#fafafa", height: "100vh" }}>
     <NavBar headerChildren={<Wallet />} />
-    {children}
+    <div className={styles.container}>{children}</div>
     <SnackbarListener />
-  </>
+  </Box>
 );
 
 export default Layout;

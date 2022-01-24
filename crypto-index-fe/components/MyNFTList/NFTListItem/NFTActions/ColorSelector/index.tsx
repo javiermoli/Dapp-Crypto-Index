@@ -1,6 +1,5 @@
-import { SelectChangeEvent } from "@mui/material";
+import { SelectChangeEvent, Typography } from "@mui/material";
 import React, { FC, useState } from "react";
-import { useTokenApprove } from "../../../../../hooks/useTokenApprove";
 import SelectColor from "./SelectColor";
 
 interface SelectMetadataProps {
@@ -26,11 +25,16 @@ const SelectMetadata: FC<SelectMetadataProps> = ({
   };
 
   return (
-    <SelectColor
-      submitSelectedColor={submitSelectedColor}
-      selectedValue={color}
-      handleChange={handleChange}
-    />
+    <>
+      <Typography sx={{ marginBottom: "10px" }} variant="h6" component="h2">
+        Add the NFT to the Marketplace
+      </Typography>
+      <SelectColor
+        submitSelectedColor={submitSelectedColor}
+        selectedValue={color}
+        handleChange={handleChange}
+      />
+    </>
   );
 };
 

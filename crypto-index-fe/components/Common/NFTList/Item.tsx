@@ -18,7 +18,7 @@ const Item: FC<ItemProps> = ({ nft, renderChildren }) => {
   const { image, name, description } = nft;
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 345, backgroundColor: "#f5f5f5" }}>
       <CardMedia
         component="img"
         height="220"

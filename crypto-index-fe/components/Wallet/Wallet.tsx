@@ -74,7 +74,7 @@ const Wallet = () => {
             </Box>
             <Typography variant="h6" component="div" sx={{ margin: "0 10px" }}>
               {balance && `${Number(formatEther(balance)).toFixed(2)} ETH`}
-            </Typography>{" "}
+            </Typography>
           </>
         )}
       </Box>

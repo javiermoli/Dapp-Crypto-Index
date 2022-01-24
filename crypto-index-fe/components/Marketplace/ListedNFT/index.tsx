@@ -6,19 +6,19 @@ import { formatBigNumber } from "../../../utils/web3";
 import List from "../../Common/NFTList/List";
 import ListedNftCardFooter, { ListedNFTData } from "./ListedNftCardFooter";
 import marketplaceAbi from "../../../config/abi/Marketplace.json";
-import { useContractInteraction } from "../../../hooks/useContractInteraction";
 import { useEffect, useState } from "react";
+import { useFetchWithFeedback } from "../../../hooks/useFetchWithFeedback";
 
 const MyNFTListM = () => {
   const [shouldUpdateData, setShouldUpdateData] = useState(0);
   const { listedNftsMarketplace, isLoading } =
     useFetchListedNFT(shouldUpdateData);
   const { contract } = useContract(CRYPTO_INDEX_MARKETPLACE, marketplaceAbi);
-  const [buyTokenCallback, buyingUpdate] = useContractInteraction({
+  const [buyTokenCallback, buyingUpdate] = useFetchWithFeedback({
     loading: "Buying token..",
     success: "The token has been bought!",
   });
-  const [removeTokenCallback, removingTokenUpdate] = useContractInteraction({
+  const [removeTokenCallback, removingTokenUpdate] = useFetchWithFeedback({
     loading: "Removing token..",
     success: "The token has been removed!",
   });
@@ -33,8 +33,9 @@ const MyNFTListM = () => {
     if (contract) {
       const { listing_id } = listedNftData;
       const tokenListingId = listing_id && formatBigNumber(listing_id);
+      const removeTokenRequest = removeListing(contract, tokenListingId);
 
-      removeTokenCallback(removeListing, contract, tokenListingId);
+      removeTokenCallback(removeTokenRequest);
     }
   };
 
@@ -45,8 +46,9 @@ const MyNFTListM = () => {
       const options = {
         value: price,
       };
+      const buyTokenRequest = buyToken(contract, tokenListingId, options);
 
-      buyTokenCallback(buyToken, contract, tokenListingId, options);
+      buyTokenCallback(buyTokenRequest);
     }
   };
 

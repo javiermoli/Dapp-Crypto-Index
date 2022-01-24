@@ -1,5 +1,5 @@
 import { FC, ChangeEvent } from "react";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 
 interface ListingTokenProps {
@@ -15,15 +15,19 @@ const ListingToken: FC<ListingTokenProps> = ({
   price,
   handleChange,
 }) => {
-  const buttonLabel = isApprove ? "List Token" : "Approve Token";
+  const buttonLabel = isApprove ? "List" : "Approve";
   const helperText = isApprove
     ? "Please, add the price in ETHER that you would like to sell the NFT"
     : "Please approve the contract";
 
   return (
     <Box>
-      <Typography> Add the NFT to the Marketplace</Typography>
       <TextField
+        sx={{
+          margin: "15px 30px 30px 30px",
+          minWidth: "280px",
+          minHeight: "100px",
+        }}
         helperText={helperText}
         label="Price"
         variant="outlined"
@@ -32,7 +36,19 @@ const ListingToken: FC<ListingTokenProps> = ({
         onChange={handleChange}
         disabled={!isApprove}
       />
-      <Button onClick={handleClick}>{buttonLabel}</Button>
+      <Button
+        variant="contained"
+        sx={{
+          position: "absolute",
+          bottom: "0",
+          right: "0",
+          margin: "15px",
+          minWidth: "103px",
+        }}
+        onClick={handleClick}
+      >
+        {buttonLabel}
+      </Button>
     </Box>
   );
 };

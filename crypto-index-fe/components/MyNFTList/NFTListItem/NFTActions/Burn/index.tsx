@@ -1,32 +1,38 @@
+import { Typography } from "@mui/material";
 import { useState, ChangeEvent, FC } from "react";
 import SelectReward from "./SelectReward";
 
 interface BurnProps {
-  burn: (tokenId: number, rewardsInDAI: boolean) => void;
+  burn: (tokenId: number, reward: boolean) => void;
   tokenId: number;
 }
 
 const Burn: FC<BurnProps> = ({ tokenId, burn }) => {
-  const [rewardsInDAI, setRewardsInDAI] = useState(true);
+  const [reward, setReward] = useState("dai");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { checked } = event.target;
+    const { value } = event.target;
 
-    setRewardsInDAI(checked);
+    setReward(value);
   };
 
   const burnNFT = () => {
     if (tokenId >= 0) {
-      burn(tokenId, rewardsInDAI);
+      burn(tokenId, reward === "dai");
     }
   };
 
   return (
-    <SelectReward
-      checked={rewardsInDAI}
-      handleChange={handleChange}
-      burnNFT={burnNFT}
-    />
+    <>
+      <Typography sx={{ marginBottom: "10px" }} variant="h6" component="h2">
+        Burn NFT
+      </Typography>
+      <SelectReward
+        selectedReward={reward}
+        handleChange={handleChange}
+        burnNFT={burnNFT}
+      />
+    </>
   );
 };
 

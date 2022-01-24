@@ -25,7 +25,15 @@ const SelectColor: FC<SelectedRewardProps> = ({
 }) => {
   return (
     <Box>
-      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+      <FormControl
+        variant="standard"
+        sx={{
+          m: 1,
+          minWidth: 120,
+          minHeight: 100,
+          margin: "15px 30px 30px 30px",
+        }}
+      >
         <InputLabel id="select-nft-color-label">Color</InputLabel>
         <Select
           labelId="select-nft-color-label"
@@ -45,7 +53,13 @@ const SelectColor: FC<SelectedRewardProps> = ({
         </Select>
         <FormHelperText>Select your NFT color.</FormHelperText>
       </FormControl>
-      <Button onClick={submitSelectedColor}>Select Color</Button>
+      <Button
+        variant="contained"
+        sx={{ position: "absolute", bottom: "0", right: "0", margin: "15px" }}
+        onClick={submitSelectedColor}
+      >
+        Select Color
+      </Button>
     </Box>
   );
 };

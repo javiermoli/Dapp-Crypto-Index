@@ -5,19 +5,19 @@ import List from "../Common/NFTList/List";
 import useFetchNFTs from "../../hooks/useFetchNFTs";
 import { NFTMetadata } from "../../types/NFT";
 import CardFooter from "./NFTListItem/NftCardFooter/CardFooter";
-import { useContractInteraction } from "../../hooks/useContractInteraction";
 import { burnNft, setTokenColor } from "../../utils/calls/nftIndex";
 import { useEffect, useState } from "react";
+import { useFetchWithFeedback } from "../../hooks/useFetchWithFeedback";
 
 const MyNFTList = () => {
   const [shouldUpdateData, setShouldUpdateData] = useState(0);
-  const [burnNftCallback, burningNft] = useContractInteraction({
+  const [burnNftCallback, burningNft] = useFetchWithFeedback({
     loading: "Burning token...",
     success: "The token has been burned!",
   });
-  const [setTokenColorCallback, addingTokenColor] = useContractInteraction({
-    loading: "Adding token color...",
-    success: "The token color has been set!",
+  const [setTokenColorCallback, addingTokenColor] = useFetchWithFeedback({
+    loading: "Changing token color...",
+    success: "The token color has been changed!",
   });
   const { contract } = useContract(CRYPTO_INDEX, cryptoIndexAbi);
   const { NFTs, isLoading } = useFetchNFTs(
@@ -33,14 +33,18 @@ const MyNFTList = () => {
   }, [burningNft, addingTokenColor, setShouldUpdateData]);
 
   const handleBurnNft = async (nftId: number, convertToStableCoin: boolean) => {
-    if (contract?.burnNFT && nftId >= 0) {
-      burnNftCallback(burnNft, contract, nftId, convertToStableCoin);
+    if (contract && nftId >= 0) {
+      const burnRequest = burnNft(contract, nftId, convertToStableCoin);
+
+      burnNftCallback(burnRequest);
     }
   };
 
   const handleSetTokenColor = async (nftId: number, tokenColor: string) => {
-    if (contract?.burnNFT && nftId && tokenColor) {
-      setTokenColorCallback(setTokenColor, contract, nftId, tokenColor);
+    if (contract && nftId >= 0 && tokenColor) {
+      const changeColorRequest = setTokenColor(contract, nftId, tokenColor);
+
+      setTokenColorCallback(changeColorRequest);
     }
   };
 

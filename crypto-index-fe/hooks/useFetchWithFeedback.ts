@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
 import useSnackbar from "./useSnackbar";
 
-export interface BlockchainResponse {
+export interface Response {
   wait: () => Promise<{ confirmations: number }>;
   confirmations: number;
 }
 
-export const useContractInteraction = (feedbackMessages: {
+export const useFetchWithFeedback = (feedbackMessages: {
   success?: string;
   loading?: string;
   error?: string;
@@ -16,12 +16,9 @@ export const useContractInteraction = (feedbackMessages: {
   const { success, loading, error } = feedbackMessages;
 
   const callback = useCallback(
-    async (
-      method: (...params: any[]) => Promise<BlockchainResponse>,
-      ...params: any[]
-    ) => {
+    async (action: Promise<any>) => {
       try {
-        const response = await method(...params);
+        const response = await action;
         if (loading) snackBarLoading(loading);
 
         const waiter = await response.wait();

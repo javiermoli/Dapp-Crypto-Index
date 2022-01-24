@@ -4,7 +4,6 @@ import {
   CRYPTO_INDEX_MARKETPLACE,
 } from "../../../../../config/constants/contracts";
 import { useContract } from "../../../../../hooks/useContract";
-import { useContractInteraction } from "../../../../../hooks/useContractInteraction";
 import { useTokenApprove } from "../../../../../hooks/useTokenApprove";
 import ListingToken from "./ListingToken";
 import marketplaceAbi from "../../../../../config/abi/Marketplace.json";
@@ -13,6 +12,8 @@ import { approveToken } from "../../../../../utils/calls/nftIndex";
 import { BigNumber, FixedNumber } from "ethers";
 import { listToken } from "../../../../../utils/calls/nftMarketplace";
 import { useRouter } from "next/router";
+import { Typography } from "@mui/material";
+import { useFetchWithFeedback } from "../../../../../hooks/useFetchWithFeedback";
 
 interface ListingProps {
   tokenId: number;
@@ -20,12 +21,12 @@ interface ListingProps {
 
 const Listing: FC<ListingProps> = ({ tokenId }) => {
   const router = useRouter();
-  const [listCallback, listingToken] = useContractInteraction({
-    loading: "Listing token int he marketplace...",
-    success: "The token has been listed!",
+  const [listCallback, listingToken] = useFetchWithFeedback({
+    loading: "Listing token...",
+    success: "The token has been listed in the marketplace!",
   });
-  const [approveCallback, approvingToken] = useContractInteraction({
-    loading: "Approving...",
+  const [approveCallback, approvingToken] = useFetchWithFeedback({
+    loading: "Approving contract...",
     success: "The contract has been approved!",
   });
   const { contract: marketplaceContract } = useContract(
@@ -58,31 +59,43 @@ const Listing: FC<ListingProps> = ({ tokenId }) => {
   };
 
   const list = async () => {
-    if (marketplaceContract) {
+    if (marketplaceContract && price) {
       const priceFixedNumber = FixedNumber.from(price.toString(), 18);
       const priceBigNumber = BigNumber.from(priceFixedNumber);
-      listCallback(listToken, marketplaceContract, tokenId, priceBigNumber);
+      const listTokenRequest = listToken(
+        marketplaceContract,
+        tokenId,
+        priceBigNumber
+      );
+
+      listCallback(listTokenRequest);
     }
   };
 
   const approve = async () => {
     if (indexContract) {
-      approveCallback(
-        approveToken,
+      const approveRequest = approveToken(
         tokenId,
         indexContract,
         CRYPTO_INDEX_MARKETPLACE
       );
+
+      approveCallback(approveRequest);
     }
   };
 
   return (
-    <ListingToken
-      handleChange={handleChange}
-      price={price}
-      handleClick={handleClick}
-      isApprove={isApprove}
-    />
+    <>
+      <Typography sx={{ marginBottom: "10px" }} variant="h6" component="h2">
+        Add the NFT to the Marketplace
+      </Typography>
+      <ListingToken
+        handleChange={handleChange}
+        price={price}
+        handleClick={handleClick}
+        isApprove={isApprove}
+      />
+    </>
   );
 };
 

@@ -18,6 +18,8 @@ const useOwner = () => {
           setOwner(owner);
           if (owner === account) {
             setIsOwner(true);
+          } else {
+            setIsOwner(false);
           }
         }
       } catch (error) {
