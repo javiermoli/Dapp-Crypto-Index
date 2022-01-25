@@ -19,7 +19,7 @@ const SelectMetadata: FC<SelectMetadataProps> = ({
   };
 
   const submitSelectedColor = () => {
-    if (tokenId >= 0 && color) {
+    if (tokenId >= 0 && color !== "") {
       setTokenColor(tokenId, color);
     }
   };

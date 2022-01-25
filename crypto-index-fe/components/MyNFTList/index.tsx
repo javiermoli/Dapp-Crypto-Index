@@ -41,7 +41,7 @@ const MyNFTList = () => {
   };
 
   const handleSetTokenColor = async (nftId: number, tokenColor: string) => {
-    if (contract && nftId >= 0 && tokenColor) {
+    if (contract && nftId >= 0 && tokenColor !== "") {
       const changeColorRequest = setTokenColor(contract, nftId, tokenColor);
 
       setTokenColorCallback(changeColorRequest);
