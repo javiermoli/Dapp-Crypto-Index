@@ -1,5 +1,7 @@
 import { FC } from "react";
 import { Alert, AlertColor, CircularProgress, Snackbar } from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { SnackBarProvider } from "../../../contexts/SnackbarContext/Provider";
 import { snackBarTypes } from "../../../config/constants/snackBar";
 
@@ -14,9 +16,11 @@ const SnackbarComponent: FC<SnackbarComponentProps> = ({
 }) => {
   const { message, open } = snackbarData;
   const type = (snackbarData.type as AlertColor) || "success";
-  const infoIcon = type === snackBarTypes.loading && (
-    <CircularProgress size={20} color="inherit" />
-  );
+  const infoIcon = {
+    [snackBarTypes.loading]: <CircularProgress size={20} color="inherit" />,
+    [snackBarTypes.error]: <ErrorOutlineIcon color="inherit" />,
+    [snackBarTypes.success]: <CheckCircleOutlineIcon color="inherit" />,
+  };
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
@@ -36,7 +40,16 @@ const SnackbarComponent: FC<SnackbarComponentProps> = ({
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       autoHideDuration={type === snackBarTypes.loading ? null : 6000}
     >
-      <Alert icon={infoIcon} severity={type} sx={{ width: "100%" }}>
+      <Alert
+        icon={infoIcon[type]}
+        severity={type}
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         {message}
       </Alert>
     </Snackbar>

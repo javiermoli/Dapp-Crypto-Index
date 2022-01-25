@@ -18,43 +18,41 @@ interface SideBarProps {
   isOwner: boolean;
 }
 
-const SideBar: FC<SideBarProps> = ({ isOpen, toggleDrawer, isOwner }) => {
-  return (
-    <Drawer onClose={toggleDrawer} open={isOpen}>
-      <List>
+const SideBar: FC<SideBarProps> = ({ isOpen, toggleDrawer, isOwner }) => (
+  <Drawer onClose={toggleDrawer} open={isOpen}>
+    <List>
+      <Link href="/" passHref>
         <ListItem button>
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>
-          <Link href="/" passHref>
-            <ListItemText>Home</ListItemText>
-          </Link>
+          <ListItemText>Home</ListItemText>
         </ListItem>
-        <Divider />
+      </Link>
+      <Divider />
+      <Link href="/marketplace" passHref>
         <ListItem button>
           <ListItemIcon>
             <StorefrontIcon />
           </ListItemIcon>
-          <Link href="/marketplace" passHref>
-            <ListItemText>Marketplace</ListItemText>
-          </Link>
+          <ListItemText>Marketplace</ListItemText>
         </ListItem>
-        {isOwner && (
-          <>
-            <Divider />
+      </Link>
+      {isOwner && (
+        <>
+          <Divider />
+          <Link href="/owner" passHref>
             <ListItem button>
               <ListItemIcon>
                 <ManageAccountsIcon />
               </ListItemIcon>
-              <Link href="/owner" passHref>
-                <ListItemText>Owner</ListItemText>
-              </Link>
+              <ListItemText>Owner</ListItemText>
             </ListItem>
-          </>
-        )}
-      </List>
-    </Drawer>
-  );
-};
+          </Link>
+        </>
+      )}
+    </List>
+  </Drawer>
+);
 
 export default SideBar;

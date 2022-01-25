@@ -27,7 +27,7 @@ const SelectMetadata: FC<SelectMetadataProps> = ({
   return (
     <>
       <Typography sx={{ marginBottom: "10px" }} variant="h6" component="h2">
-        Add the NFT to the Marketplace
+        Select a color
       </Typography>
       <SelectColor
         submitSelectedColor={submitSelectedColor}

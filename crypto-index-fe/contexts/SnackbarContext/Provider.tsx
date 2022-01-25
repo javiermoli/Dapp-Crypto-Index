@@ -1,4 +1,4 @@
-import { createContext, useState, FC } from "react";
+import { createContext, useState, FC, useCallback } from "react";
 import { snackBarTypes } from "../../config/constants/snackBar";
 
 export interface SnackBarProvider {
@@ -33,17 +33,17 @@ export const SnackbarProvider: FC = ({ children }) => {
     });
   };
 
-  const snackBarError = (message: string) => {
+  const snackBarError = useCallback((message: string) => {
     snackBar({ message, type: snackBarTypes.error });
-  };
+  }, []);
 
-  const snackBarSuccess = (message: string) => {
+  const snackBarSuccess = useCallback((message: string) => {
     snackBar({ message, type: snackBarTypes.success });
-  };
+  }, []);
 
-  const snackBarLoading = (message: string) => {
+  const snackBarLoading = useCallback((message: string) => {
     snackBar({ message, type: snackBarTypes.loading });
-  };
+  }, []);
 
   const closeSnackBar = () => {
     setSnackBarData(defaultSnackProvider);

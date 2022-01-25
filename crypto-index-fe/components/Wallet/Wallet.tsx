@@ -6,6 +6,7 @@ import { BigNumberish } from "@ethersproject/bignumber";
 import Blockies from "react-blockies";
 import { Box } from "@mui/system";
 import { Button, Typography } from "@mui/material";
+import { exactRound } from "../../utils/currency";
 
 const Wallet = () => {
   const [balance, setBalance] = useState<BigNumberish>("");
@@ -39,6 +40,7 @@ const Wallet = () => {
   };
 
   const displayAddress = getAddressWithEllipsis();
+  const formattedEther = balance ? exactRound(formatEther(balance), 2) : "";
 
   return (
     <>
@@ -73,7 +75,7 @@ const Wallet = () => {
               <Blockies seed={account as any} size={8} scale={2} />
             </Box>
             <Typography variant="h6" component="div" sx={{ margin: "0 10px" }}>
-              {balance && `${Number(formatEther(balance)).toFixed(2)} ETH`}
+              {balance && `${formattedEther} ETH`}
             </Typography>
           </>
         )}

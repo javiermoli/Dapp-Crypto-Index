@@ -58,6 +58,7 @@ const useFetchListedNFT = (shouldUpdate?: number | string) => {
           setListedNftsMarketplace(nftsData);
         } else {
           setListedNftsMarketplace([]);
+          setIsLoading(false);
         }
       }
       setIsLoading(false);

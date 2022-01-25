@@ -39,6 +39,9 @@ const useFetchNFTs = (
 
           setTokensIds(metadata);
           setIsLoading(false);
+        } else {
+          setTokensIds([]);
+          setIsLoading(false);
         }
       } catch (error) {
         setIsLoading(false);
