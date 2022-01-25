@@ -6,7 +6,7 @@
 - Only the owner of the NFT can burn it.
 - The nft can be sold on the market.
 
-Supported Blockchains: Kovan.
-Supported Breakpoint: Desktop.
+- Supported Blockchains: Kovan.
+- Supported Breakpoint: Desktop.
 
 https://dapp-crypto-index-ftso0byys-javiermoli.vercel.app
