@@ -2,8 +2,8 @@ import { createContext, useState, FC, useCallback } from "react";
 import { snackBarTypes } from "../../config/constants/snackBar";
 
 export interface SnackBarProvider {
-  message: string;
-  type: string;
+  message?: string;
+  type?: string;
   open?: boolean;
 }
 
@@ -19,7 +19,7 @@ export const SnackBarContext = createContext<SnackBarContextProvider>(
   {} as SnackBarContextProvider
 );
 
-const defaultSnackProvider = { message: "", type: "", open: false };
+const defaultSnackProvider = { message: "", type: "success", open: false };
 
 export const SnackbarProvider: FC = ({ children }) => {
   const [snackBarData, setSnackBarData] =
@@ -46,7 +46,7 @@ export const SnackbarProvider: FC = ({ children }) => {
   }, []);
 
   const closeSnackBar = () => {
-    setSnackBarData(defaultSnackProvider);
+    setSnackBarData({ ...snackBarData, open: false });
   };
 
   return (

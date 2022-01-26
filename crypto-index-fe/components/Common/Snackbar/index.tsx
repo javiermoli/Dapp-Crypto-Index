@@ -15,7 +15,7 @@ const SnackbarComponent: FC<SnackbarComponentProps> = ({
   close,
 }) => {
   const { message, open } = snackbarData;
-  const type = (snackbarData.type as AlertColor) || "success";
+  const type = snackbarData.type as AlertColor;
   const infoIcon = {
     [snackBarTypes.loading]: <CircularProgress size={20} color="inherit" />,
     [snackBarTypes.error]: <ErrorOutlineIcon color="inherit" />,
