@@ -24,7 +24,7 @@ const SkeletonCard: FC<SkeletonCardProps> = ({ itemsQty }) => {
           >
             <Skeleton variant="rectangular" height={220} />
             <Box sx={{ padding: "15px" }}>
-              <Skeleton sx={{ margin: "10px 0" }} width="30%" height={30} />
+              <Skeleton sx={{ marginBottom: "10px" }} width="30%" height={30} />
               <Skeleton width="100%" />
               <Skeleton width="70%" />
               <Skeleton width="90%" />

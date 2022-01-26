@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useWeb3React } from "@web3-react/core";
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { injected } from "../../utils/web3";
 import { formatEther } from "@ethersproject/units";
 import { BigNumberish } from "@ethersproject/bignumber";
@@ -7,16 +7,24 @@ import Blockies from "react-blockies";
 import { Box } from "@mui/system";
 import { Button, Typography } from "@mui/material";
 import { exactRound } from "../../utils/currency";
+import useSnackbar from "../../hooks/useSnackbar";
 
 const Wallet = () => {
   const [balance, setBalance] = useState<BigNumberish>("");
   const { activate, account, library, active } = useWeb3React();
+  const { snackBarError } = useSnackbar();
 
   useEffect(() => {
     if (!active) {
-      activate(injected);
+      activate(injected, async (error) => {
+        if (error instanceof UnsupportedChainIdError) {
+          snackBarError(
+            `Current chain is not supported. Please, use Kovan testnet.`
+          );
+        }
+      });
     }
-  }, [active, activate]);
+  }, [active, activate, snackBarError]);
 
   useEffect(() => {
     (async () => {

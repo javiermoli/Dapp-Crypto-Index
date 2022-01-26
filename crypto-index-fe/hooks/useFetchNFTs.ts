@@ -17,7 +17,7 @@ const useFetchNFTs = (
   fetchMyNFTs: boolean,
   shouldUpdate?: number
 ) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { account } = useWeb3React();
   const [tokensIds, setTokensIds] = useState<NFTMetadata[]>([]);
   const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
@@ -38,9 +38,6 @@ const useFetchNFTs = (
           const metadata = await fetchNftMetadata(ids, contract);
 
           setTokensIds(metadata);
-          setIsLoading(false);
-        } else {
-          setTokensIds([]);
           setIsLoading(false);
         }
       } catch (error) {

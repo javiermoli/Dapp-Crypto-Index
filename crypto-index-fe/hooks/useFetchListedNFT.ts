@@ -16,7 +16,7 @@ import { fetchNftMetadata } from "../utils/calls/nftIndex";
 import { formatBigNumber } from "../utils/web3";
 
 const useFetchListedNFT = (shouldUpdate?: number | string) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [listedNftsMarketplace, setListedNftsMarketplace] = useState<any[]>([]);
   const { contract: marketplaceContract } = useContract(
     CRYPTO_INDEX_MARKETPLACE,
@@ -31,37 +31,41 @@ const useFetchListedNFT = (shouldUpdate?: number | string) => {
   useEffect(() => {
     (async () => {
       setIsLoading(true);
-      if (library?.getSigner && marketplaceContract && cryptoIndexContract) {
-        const signer = library?.getSigner();
-        const indexes = await fetchListingsIndexes(marketplaceContract);
-        const marketplaceIds = await fetchActiveListingIds(signer, indexes);
-        const marketPlaceNftsData = await fetchListingsData(
-          signer,
-          marketplaceIds
-        );
-        if (marketPlaceNftsData && marketPlaceNftsData[1]) {
-          const marketplaceIds = marketPlaceNftsData[1].map((nft) =>
-            formatBigNumber(nft.token_id)
+      try {
+        if (library?.getSigner && marketplaceContract && cryptoIndexContract) {
+          const signer = library?.getSigner();
+          const indexes = await fetchListingsIndexes(marketplaceContract);
+          const marketplaceIds = await fetchActiveListingIds(signer, indexes);
+          const marketPlaceNftsData = await fetchListingsData(
+            signer,
+            marketplaceIds
           );
-          const nftsMetadata = await fetchNftMetadata(
-            marketplaceIds,
-            cryptoIndexContract
-          );
-          // Merge the nft marketplace data with the nft metadata
-          const nftsData = nftsMetadata.map((metadata) => ({
-            ...metadata,
-            ...marketPlaceNftsData[1].find(
-              (marketNft) => formatBigNumber(marketNft.token_id) === metadata.id
-            ),
-          }));
+          if (marketPlaceNftsData && marketPlaceNftsData[1]) {
+            const marketplaceIds = marketPlaceNftsData[1].map((nft) =>
+              formatBigNumber(nft.token_id)
+            );
+            const nftsMetadata = await fetchNftMetadata(
+              marketplaceIds,
+              cryptoIndexContract
+            );
+            // Merge the nft marketplace data with the nft metadata
+            const nftsData = nftsMetadata.map((metadata) => ({
+              ...metadata,
+              ...marketPlaceNftsData[1].find(
+                (marketNft) =>
+                  formatBigNumber(marketNft.token_id) === metadata.id
+              ),
+            }));
 
-          setListedNftsMarketplace(nftsData);
-        } else {
-          setListedNftsMarketplace([]);
+            setListedNftsMarketplace(nftsData);
+          }
+
           setIsLoading(false);
         }
+      } catch (error) {
+        setIsLoading(false);
+        console.error(error);
       }
-      setIsLoading(false);
     })();
   }, [library, marketplaceContract, cryptoIndexContract, shouldUpdate]);
 
