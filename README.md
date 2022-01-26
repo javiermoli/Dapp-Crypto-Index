@@ -9,4 +9,4 @@
 - Supported Blockchains: Kovan.
 - Supported Breakpoint: Desktop.
 
-https://dapp-crypto-index-ftso0byys-javiermoli.vercel.app
+https://dapp-crypto-index.vercel.app/
