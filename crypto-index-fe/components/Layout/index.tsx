@@ -13,14 +13,7 @@ interface LayoutProps {
 const Layout: FC<LayoutProps> = ({ children }) => {
   useSupportedChains();
   return (
-    <Box
-      sx={{
-        backgroundColor: "#fafafa",
-        height: "100%",
-        width: "100%",
-        position: "absolute",
-      }}
-    >
+    <Box>
       <NavBar headerChildren={<Wallet />} />
       <div className={styles.container}>{children}</div>
       <SnackbarListener />

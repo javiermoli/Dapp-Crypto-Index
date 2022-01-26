@@ -9,10 +9,13 @@ export const useSupportedChains = () => {
   const { snackBarError } = useSnackbar();
 
   useEffect(() => {
+    console.log("Unsupported chain call", error);
     if (error?.name === unsupportedChainIdError) {
+      console.log("Unsupported chain error", error);
       snackBarError(`Current chain is not supported`);
       setCurrentChainIsSupported(false);
     } else {
+      console.log("Supported chain", error);
       setCurrentChainIsSupported(true);
     }
   }, [error, snackBarError]);
