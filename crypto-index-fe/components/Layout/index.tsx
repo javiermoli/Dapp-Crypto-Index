@@ -11,11 +11,13 @@ interface LayoutProps {
 }
 
 const Layout: FC<LayoutProps> = ({ children }) => {
-  useSupportedChains();
+  const { currentChainIsSupported } = useSupportedChains();
   return (
     <Box>
       <NavBar headerChildren={<Wallet />} />
-      <div className={styles.container}>{children}</div>
+      {currentChainIsSupported && (
+        <div className={styles.container}>{children}</div>
+      )}
       <SnackbarListener />
     </Box>
   );
