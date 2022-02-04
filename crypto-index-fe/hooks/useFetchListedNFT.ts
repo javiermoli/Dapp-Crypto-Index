@@ -67,6 +67,11 @@ const useFetchListedNFT = (shouldUpdate?: number | string) => {
         console.error(error);
       }
     })();
+
+    return () => {
+      setIsLoading(false);
+      setListedNftsMarketplace([]);
+    };
   }, [library, marketplaceContract, cryptoIndexContract, shouldUpdate]);
 
   return { listedNftsMarketplace, isLoading };

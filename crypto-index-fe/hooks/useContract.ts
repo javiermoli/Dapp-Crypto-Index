@@ -12,6 +12,10 @@ export const useContract = (address: string, abi: ethers.ContractInterface) => {
       const ethersContract = new ethers.Contract(address, abi, signer);
       setContract(ethersContract);
     }
+
+    return () => {
+      setContract(undefined);
+    };
   }, [address, abi, library]);
 
   return { contract };

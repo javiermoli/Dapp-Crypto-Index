@@ -16,7 +16,7 @@ export const multiCall = async (config: multiCallParams) => {
   const inputs: any[] = totalItems.map((param) => ({
     target: contractAddress,
     function: contractFunctionName,
-    args: [param],
+    args: Array.isArray(param) ? param : [param],
   }));
 
   const data = await multi.multiCall(abi, inputs);

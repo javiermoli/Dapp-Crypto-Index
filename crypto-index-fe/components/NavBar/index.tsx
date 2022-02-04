@@ -2,7 +2,7 @@ import React, { useState, useEffect, ReactNode, FC } from "react";
 import Header from "./Header";
 import SideBar from "./SideBar";
 import { useRouter } from "next/router";
-import useOwner from "../../../hooks/useOwner";
+import useOwner from "../../hooks/useOwner";
 
 interface NavBarProps {
   headerChildren?: ReactNode;
@@ -32,7 +32,7 @@ const NavBar: FC<NavBarProps> = ({ headerChildren }) => {
   return (
     <>
       <Header toggleDrawer={openDrawer}>{headerChildren}</Header>
-      <SideBar isOwner={isOwner} toggleDrawer={closeDrawer} isOpen={isOpen} />
+      <SideBar isOwner={!!isOwner} toggleDrawer={closeDrawer} isOpen={isOpen} />
     </>
   );
 };

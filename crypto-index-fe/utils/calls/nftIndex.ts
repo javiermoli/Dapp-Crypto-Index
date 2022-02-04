@@ -1,5 +1,8 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { formatBigNumber } from "../web3";
+import { multiCall } from "./multiCall";
+import { CRYPTO_INDEX } from "../../config/constants/contracts";
+import CryptoIndexAbi from "../../config/abi/IndexNFTNumerable.json";
 
 export const fetchNftMetadata = async (
   ids: number[],
@@ -22,31 +25,39 @@ export const fetchNftMetadata = async (
 
 export const fetchNftOfOwnerByIndex = async (
   indexes: number[],
-  contract: ethers.Contract,
+  signer: ethers.Signer,
   account: string
 ) => {
-  const ids = indexes.map(async (index) => {
-    const responseId = await contract?.tokenOfOwnerByIndex(account, index);
-    const id = formatBigNumber(responseId);
+  const totalItems = indexes.map((index) => [account, index]);
+  const nftByIndexSetting = {
+    signer,
+    totalItems: totalItems,
+    contractAddress: CRYPTO_INDEX,
+    contractFunctionName: "tokenOfOwnerByIndex",
+    abi: CryptoIndexAbi,
+  };
+  const multiCallResponse = await multiCall(nftByIndexSetting);
+  const ids =
+    multiCallResponse[1] &&
+    multiCallResponse[1].map((id: BigNumber) => formatBigNumber(id));
 
-    return id;
-  });
-
-  return Promise.all(ids);
+  return ids;
 };
 
-export const fetchNftByIndex = async (
-  indexes: number[],
-  contract: ethers.Contract
-) => {
-  const ids = indexes.map(async (index) => {
-    const responseId = await contract?.tokenByIndex(index);
-    const id = formatBigNumber(responseId);
+export const fetchNftByIndex = async (indexes: number[], signer: any) => {
+  const nftByIndexSetting = {
+    signer,
+    totalItems: indexes,
+    contractAddress: CRYPTO_INDEX,
+    contractFunctionName: "tokenByIndex",
+    abi: CryptoIndexAbi,
+  };
+  const multiCallResponse = await multiCall(nftByIndexSetting);
+  const ids =
+    multiCallResponse[1] &&
+    multiCallResponse[1].map((id: BigNumber) => formatBigNumber(id));
 
-    return id;
-  });
-
-  return Promise.all(ids);
+  return ids;
 };
 
 export const getApproved = async (

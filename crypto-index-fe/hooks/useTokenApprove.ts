@@ -20,6 +20,10 @@ export const useTokenApprove = (tokenId: number, shouldUpdate: number) => {
         }
       }
     })();
+
+    return () => {
+      setIsApprove(false);
+    };
   }, [indexContract, tokenId, shouldUpdate]);
 
   return { isApprove };

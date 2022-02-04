@@ -7,14 +7,14 @@ import CryptoIndexAbi from "../config/abi/IndexNFTNumerable.json";
 const useOwner = () => {
   const { account } = useWeb3React();
   const [owner, setOwner] = useState("");
-  const [isOwner, setIsOwner] = useState(false);
+  const [isOwner, setIsOwner] = useState<boolean>();
   const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
 
   useEffect(() => {
     (async () => {
       try {
-        if (account) {
-          const owner = await contract?.owner();
+        const owner = await contract?.owner();
+        if (account && owner) {
           setOwner(owner);
           if (owner === account) {
             setIsOwner(true);

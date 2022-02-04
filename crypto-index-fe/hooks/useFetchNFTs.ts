@@ -18,23 +18,24 @@ const useFetchNFTs = (
   shouldUpdate?: number
 ) => {
   const [isLoading, setIsLoading] = useState(true);
-  const { account } = useWeb3React();
+  const { account, library } = useWeb3React();
   const [tokensIds, setTokensIds] = useState<NFTMetadata[]>([]);
   const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
 
   useEffect(() => {
     (async () => {
+      const signer = library?.getSigner();
       setIsLoading(true);
       try {
-        if (contract && account) {
+        if (contract && account && signer) {
           const totalTokens = fetchMyNFTs
             ? await callback(account)
             : await callback();
           const totalTokensFormatted = formatBigNumber(totalTokens);
           const tokensIndexArr = Array.from(Array(totalTokensFormatted).keys());
           const ids = fetchMyNFTs
-            ? await fetchNftOfOwnerByIndex(tokensIndexArr, contract, account)
-            : await fetchNftByIndex(tokensIndexArr, contract);
+            ? await fetchNftOfOwnerByIndex(tokensIndexArr, signer, account)
+            : await fetchNftByIndex(tokensIndexArr, signer);
           const metadata = await fetchNftMetadata(ids, contract);
 
           setTokensIds(metadata);
@@ -45,7 +46,12 @@ const useFetchNFTs = (
         console.log(error);
       }
     })();
-  }, [contract, account, callback, fetchMyNFTs, shouldUpdate]);
+
+    return () => {
+      setTokensIds([]);
+      setIsLoading(false);
+    };
+  }, [contract, account, callback, fetchMyNFTs, shouldUpdate, library]);
 
   return { NFTs: tokensIds, isLoading };
 };

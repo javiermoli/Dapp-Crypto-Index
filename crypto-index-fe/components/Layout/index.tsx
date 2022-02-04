@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import SnackbarListener from "../../contexts/SnackbarContext/SnackbarListener";
-import NavBar from "../Common/NavBar";
+import NavBar from "../NavBar";
 import Wallet from "../Wallet/Wallet";
 import styles from "../../styles/Home.module.css";
 import { Box } from "@mui/material";
