@@ -2,49 +2,37 @@ import { useContract } from "../../hooks/useContract";
 import cryptoIndexAbi from "../../config/abi/IndexNFTNumerable.json";
 import { CRYPTO_INDEX } from "../../config/constants/contracts";
 import List from "../Common/NFTList/List";
-import useFetchNFTs from "../../hooks/useFetchNFTs";
 import { NFTMetadata } from "../../types/NFT";
 import CardFooter from "./NFTListItem/NftCardFooter/CardFooter";
 import { burnNft, setTokenColor } from "../../utils/calls/nftIndex";
-import { useEffect, useState } from "react";
-import { useFetchWithFeedback } from "../../hooks/useFetchWithFeedback";
+import useFetchNftMyNfts, {
+  MY_NFTS_QUERY_KEY,
+} from "../../hooks/useFetchNftMyNfts";
+import { useMutations } from "../../hooks/useMutations";
+import { NFTS_QUERY_KEY } from "../../hooks/useFetchNfts";
+import useSnackbar from "../../hooks/useSnackbar";
 
 const MyNFTList = () => {
-  const [shouldUpdateData, setShouldUpdateData] = useState(0);
-  const [burnNftCallback, burningNft] = useFetchWithFeedback({
-    loading: "Burning token...",
-    success: "The token has been burned!",
-  });
-  const [setTokenColorCallback, addingTokenColor] = useFetchWithFeedback({
-    loading: "Changing token color...",
-    success: "The token color has been changed!",
-  });
+  const { snackBarLoading } = useSnackbar();
+  const changeColor = useMutations(setTokenColor, [
+    MY_NFTS_QUERY_KEY,
+    NFTS_QUERY_KEY,
+  ]);
+  const burn = useMutations(burnNft);
   const { contract } = useContract(CRYPTO_INDEX, cryptoIndexAbi);
-  const { NFTs, isLoading } = useFetchNFTs(
-    contract?.balanceOf,
-    true,
-    shouldUpdateData
-  );
-
-  useEffect(() => {
-    (() => {
-      setShouldUpdateData((prevValue) => (prevValue += 1));
-    })();
-  }, [burningNft, addingTokenColor, setShouldUpdateData]);
+  const { data, isLoading } = useFetchNftMyNfts();
 
   const handleBurnNft = async (nftId: number, convertToStableCoin: boolean) => {
     if (contract && nftId >= 0) {
-      const burnRequest = burnNft(contract, nftId, convertToStableCoin);
-
-      burnNftCallback(burnRequest);
+      snackBarLoading("Burning NFT...");
+      burn({ contract, nftId, convertToStableCoin });
     }
   };
 
   const handleSetTokenColor = async (nftId: number, tokenColor: string) => {
     if (contract && nftId >= 0 && tokenColor !== "") {
-      const changeColorRequest = setTokenColor(contract, nftId, tokenColor);
-
-      setTokenColorCallback(changeColorRequest);
+      snackBarLoading("Setting token color...");
+      changeColor({ contract, nftId, tokenColor });
     }
   };
 
@@ -60,7 +48,7 @@ const MyNFTList = () => {
     <List
       isLoading={isLoading}
       title="My NFTs"
-      nfts={NFTs}
+      nfts={data}
       renderChildren={renderCardFooter}
     />
   );

@@ -1,9 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { ethers } from "ethers";
+import { Contract, ethers } from "ethers";
 import { multiCall } from "./multiCall";
 import { CRYPTO_INDEX_MARKETPLACE } from "../../config/constants/contracts";
 import CryptoIndexMarketplaceAbi from "../../config/abi/Marketplace.json";
 import { formatBigNumber } from "../web3";
+import { fetchNftMetadata } from "./nftIndex";
 
 export const fetchListingsIndexes = async (contract: ethers.Contract) => {
   if (contract) {
@@ -45,31 +46,64 @@ export const fetchListingsData = async (signer: any, ids: number[]) => {
   return tokensData;
 };
 
-export const listToken = async (
-  contract: ethers.Contract,
-  tokenId: number,
-  price: number | string | BigNumber
-) => {
-  const listToken = await contract.addListing(tokenId, price);
+export const listToken = async (config: {
+  contract: ethers.Contract;
+  tokenId: number;
+  price: number | string | BigNumber;
+}) => {
+  const { contract, tokenId, price } = config;
+  const listing = await contract.addListing(tokenId, price);
+  const waiter = await listing.wait();
 
-  return listToken;
+  return waiter;
 };
 
-export const buyToken = async (
-  contract: ethers.Contract,
-  listingId: number,
-  options: any
-) => {
-  const buyResponse = await contract.buy(listingId, options);
+export const buyToken = async (config: {
+  contract: ethers.Contract;
+  tokenListingId: number;
+  options: any;
+}) => {
+  const { contract, tokenListingId, options } = config;
+  const buying = await contract.buy(tokenListingId, options);
+  const waiter = await buying.wait();
 
-  return buyResponse;
+  return waiter;
 };
 
-export const removeListing = async (
-  contract: ethers.Contract,
-  listingId: number
-) => {
-  const removingResponse = await contract.removeListing(listingId);
+export const removeListing = async (config: {
+  contract: ethers.Contract;
+  tokenListingId: number;
+}) => {
+  const { contract, tokenListingId } = config;
+  const removing = await contract.removeListing(tokenListingId);
+  const waiter = await removing.wait();
 
-  return removingResponse;
+  return waiter;
+};
+
+export const fetchMarketplaceNfts = async (
+  signer: any,
+  marketplaceContract?: Contract,
+  cryptoIndexContract?: Contract
+) => {
+  const indexes = await fetchListingsIndexes(marketplaceContract!);
+  const activeListingIds = await fetchActiveListingIds(signer, indexes);
+  const marketPlaceNftsData = await fetchListingsData(signer, activeListingIds);
+
+  const marketplaceIds = marketPlaceNftsData[1].map((nft) =>
+    formatBigNumber(nft.token_id)
+  );
+  const nftsMetadata = await fetchNftMetadata(
+    marketplaceIds,
+    cryptoIndexContract!
+  );
+  // Merge the nft marketplace data with the nft metadata
+  const nftsData = nftsMetadata.map((metadata) => ({
+    ...metadata,
+    ...marketPlaceNftsData[1].find(
+      (marketNft) => formatBigNumber(marketNft.token_id) === metadata.id
+    ),
+  }));
+
+  return nftsData;
 };

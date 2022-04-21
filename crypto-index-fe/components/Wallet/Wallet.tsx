@@ -5,7 +5,7 @@ import { formatEther } from "@ethersproject/units";
 import { BigNumberish } from "@ethersproject/bignumber";
 import Blockies from "react-blockies";
 import { Box } from "@mui/system";
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, Link } from "@mui/material";
 import { exactRound } from "../../utils/currency";
 import useSnackbar from "../../hooks/useSnackbar";
 
@@ -65,23 +65,32 @@ const Wallet = () => {
           </Button>
         ) : (
           <>
-            <Box
+            <Link
               sx={{
+                borderRadius: "5px",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 margin: "0 10px",
+                padding: "0 8px",
+                ":hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.04)",
+                },
               }}
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`https://kovan.etherscan.io/address/${account}`}
             >
               <Typography
                 variant="h6"
                 component="div"
-                sx={{ marginRight: "5px" }}
+                sx={{ marginRight: "5px", color: "white" }}
               >
                 {displayAddress}
               </Typography>
               <Blockies seed={account as any} size={8} scale={2} />
-            </Box>
+            </Link>
+
             <Typography variant="h6" component="div" sx={{ margin: "0 10px" }}>
               {balance && `${formattedEther} ETH`}
             </Typography>

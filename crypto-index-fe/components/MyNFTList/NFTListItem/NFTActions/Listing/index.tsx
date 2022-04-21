@@ -1,49 +1,43 @@
-import { FC, useState, ChangeEvent, useEffect } from "react";
+import { FC, useState, ChangeEvent } from "react";
 import {
   CRYPTO_INDEX,
   CRYPTO_INDEX_MARKETPLACE,
 } from "../../../../../config/constants/contracts";
 import { useContract } from "../../../../../hooks/useContract";
-import { useTokenApprove } from "../../../../../hooks/useTokenApprove";
+import {
+  IS_TOKEN_APPROVE_QUERY_KEY,
+  useIsTokenApprove,
+} from "../../../../../hooks/useTokenApprove";
 import ListingToken from "./ListingToken";
 import marketplaceAbi from "../../../../../config/abi/Marketplace.json";
 import indexAbi from "../../../../../config/abi/IndexNFTNumerable.json";
 import { approveToken } from "../../../../../utils/calls/nftIndex";
 import { BigNumber, FixedNumber } from "ethers";
 import { listToken } from "../../../../../utils/calls/nftMarketplace";
-import { useRouter } from "next/router";
 import { Typography } from "@mui/material";
-import { useFetchWithFeedback } from "../../../../../hooks/useFetchWithFeedback";
+import { useMutations } from "../../../../../hooks/useMutations";
+import useSnackbar from "../../../../../hooks/useSnackbar";
+import { MY_NFTS_QUERY_KEY } from "../../../../../hooks/useFetchNftMyNfts";
 
 interface ListingProps {
   tokenId: number;
 }
 
 const Listing: FC<ListingProps> = ({ tokenId }) => {
-  const router = useRouter();
-  const [listCallback, listingToken] = useFetchWithFeedback({
-    loading: "Listing token...",
-    success: "The token has been listed in the marketplace!",
-  });
-  const [approveCallback, approvingToken] = useFetchWithFeedback({
-    loading: "Approving contract...",
-    success: "The contract has been approved!",
-  });
   const { contract: marketplaceContract } = useContract(
     CRYPTO_INDEX_MARKETPLACE,
     marketplaceAbi
   );
   const { contract: indexContract } = useContract(CRYPTO_INDEX, indexAbi);
-  const { isApprove } = useTokenApprove(tokenId, approvingToken);
   const [price, setPrice] = useState<string>("");
-
-  useEffect(() => {
-    (() => {
-      if (listingToken) {
-        router.push("/marketplace");
-      }
-    })();
-  }, [listingToken, router]);
+  const listTokenInTheMarketplace = useMutations(listToken, [
+    MY_NFTS_QUERY_KEY,
+  ]);
+  const approveContract = useMutations(approveToken, [
+    IS_TOKEN_APPROVE_QUERY_KEY,
+  ]);
+  const isApprove = useIsTokenApprove(tokenId);
+  const { snackBarLoading } = useSnackbar();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -62,25 +56,23 @@ const Listing: FC<ListingProps> = ({ tokenId }) => {
     if (marketplaceContract && price) {
       const priceFixedNumber = FixedNumber.from(price.toString(), 18);
       const priceBigNumber = BigNumber.from(priceFixedNumber);
-      const listTokenRequest = listToken(
-        marketplaceContract,
+      snackBarLoading("Listing...");
+      listTokenInTheMarketplace({
+        contract: marketplaceContract,
         tokenId,
-        priceBigNumber
-      );
-
-      listCallback(listTokenRequest);
+        price: priceBigNumber,
+      });
     }
   };
 
   const approve = async () => {
     if (indexContract) {
-      const approveRequest = approveToken(
+      snackBarLoading("Approving...");
+      approveContract({
         tokenId,
-        indexContract,
-        CRYPTO_INDEX_MARKETPLACE
-      );
-
-      approveCallback(approveRequest);
+        contract: indexContract,
+        operator: CRYPTO_INDEX_MARKETPLACE,
+      });
     }
   };
 

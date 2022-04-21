@@ -1,59 +1,19 @@
-import { useEffect, useState } from "react";
 import { useWeb3React } from "@web3-react/core";
-import { useContract } from "../hooks/useContract";
-import CryptoIndexAbi from "../config/abi/IndexNFTNumerable.json";
-import { CRYPTO_INDEX } from "../config/constants/contracts";
-import { BigNumber } from "@ethersproject/bignumber";
-import {
-  fetchNftByIndex,
-  fetchNftMetadata,
-  fetchNftOfOwnerByIndex,
-} from "../utils/calls/nftIndex";
-import { NFTMetadata } from "../types/NFT";
-import { formatBigNumber } from "../utils/web3";
+import { fetchNfts } from "../utils/calls/nftIndex";
+import { useQuery } from "react-query";
 
-const useFetchNFTs = (
-  callback: (account?: string) => Promise<BigNumber>,
-  fetchMyNFTs: boolean,
-  shouldUpdate?: number
-) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const { account, library } = useWeb3React();
-  const [tokensIds, setTokensIds] = useState<NFTMetadata[]>([]);
-  const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
+export const NFTS_QUERY_KEY = "nftsList";
 
-  useEffect(() => {
-    (async () => {
-      const signer = library?.getSigner();
-      setIsLoading(true);
-      try {
-        if (contract && account && signer) {
-          const totalTokens = fetchMyNFTs
-            ? await callback(account)
-            : await callback();
-          const totalTokensFormatted = formatBigNumber(totalTokens);
-          const tokensIndexArr = Array.from(Array(totalTokensFormatted).keys());
-          const ids = fetchMyNFTs
-            ? await fetchNftOfOwnerByIndex(tokensIndexArr, signer, account)
-            : await fetchNftByIndex(tokensIndexArr, signer);
-          const metadata = await fetchNftMetadata(ids, contract);
+const useFetchNfts = () => {
+  const { library } = useWeb3React();
+  const signer = library?.getSigner();
 
-          setTokensIds(metadata);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        setIsLoading(false);
-        console.log(error);
-      }
-    })();
+  const response = useQuery([NFTS_QUERY_KEY], () => fetchNfts(signer), {
+    enabled: !!signer,
+    initialData: null,
+  });
 
-    return () => {
-      setTokensIds([]);
-      setIsLoading(false);
-    };
-  }, [contract, account, callback, fetchMyNFTs, shouldUpdate, library]);
-
-  return { NFTs: tokensIds, isLoading };
+  return response;
 };
 
-export default useFetchNFTs;
+export default useFetchNfts;

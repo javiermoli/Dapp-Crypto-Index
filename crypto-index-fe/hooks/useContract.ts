@@ -1,6 +1,7 @@
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
+import { getContract } from "../utils/web3";
 
 export const useContract = (address: string, abi: ethers.ContractInterface) => {
   const { library } = useWeb3React();
@@ -9,7 +10,7 @@ export const useContract = (address: string, abi: ethers.ContractInterface) => {
   useEffect(() => {
     const signer = library?.getSigner();
     if (signer) {
-      const ethersContract = new ethers.Contract(address, abi, signer);
+      const ethersContract = getContract(address, abi, signer);
       setContract(ethersContract);
     }
 

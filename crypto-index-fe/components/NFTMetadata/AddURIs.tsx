@@ -4,21 +4,9 @@ import CryptoIndexAbi from "../../config/abi/IndexNFTNumerable.json";
 import { CRYPTO_INDEX } from "../../config/constants/contracts";
 import useOwner from "../../hooks/useOwner";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { useFetchWithFeedback } from "../../hooks/useFetchWithFeedback";
-
-type Colors = {
-  black: "black";
-  white: "white";
-  green: "green";
-  yellow: "yellow";
-};
-
-const colors: Colors = {
-  black: "black",
-  white: "white",
-  green: "green",
-  yellow: "yellow",
-};
+import { useMutations } from "../../hooks/useMutations";
+import { setNftURIs } from "../../utils/calls/nftIndex";
+import useSnackbar from "../../hooks/useSnackbar";
 
 const initialUris = {
   black: "",
@@ -32,22 +20,17 @@ const textStyle = {
 };
 
 const AddURIs = () => {
-  const { black, white, yellow, green } = colors;
   const [uris, setUris] = useState(initialUris);
   const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
   const { isOwner } = useOwner();
-  const [changeUrisCallback] = useFetchWithFeedback({
-    loading: "Minting token..",
-    success: "The token has been minted!",
-  });
+  const setUrisRequest = useMutations(setNftURIs);
+  const { snackBarLoading } = useSnackbar();
 
   const addURI = async () => {
-    if (contract?.setTokenURIs) {
-      const parseUris = [uris[black], uris[white], uris[green], uris[yellow]];
-      const changeUriRequest = contract.setTokenURIs(parseUris);
+    const urisToSet = Object.values(uris);
 
-      changeUrisCallback(changeUriRequest);
-    }
+    snackBarLoading("Setting URIs...");
+    setUrisRequest({ uris: urisToSet, contract });
   };
 
   const handleRadioButtonChange = (
@@ -81,7 +64,7 @@ const AddURIs = () => {
           >
             <TextField
               sx={textStyle}
-              name={black}
+              name="black"
               value={uris.black}
               onChange={handleRadioButtonChange}
               type="text"
@@ -90,7 +73,7 @@ const AddURIs = () => {
             />
             <TextField
               sx={textStyle}
-              name={white}
+              name="white"
               value={uris.white}
               onChange={handleRadioButtonChange}
               type="text"
@@ -99,7 +82,7 @@ const AddURIs = () => {
             />
             <TextField
               sx={textStyle}
-              name={green}
+              name="green"
               value={uris.green}
               onChange={handleRadioButtonChange}
               type="text"
@@ -108,7 +91,7 @@ const AddURIs = () => {
             />
             <TextField
               sx={textStyle}
-              name={yellow}
+              name="yellow"
               value={uris.yellow}
               onChange={handleRadioButtonChange}
               type="text"

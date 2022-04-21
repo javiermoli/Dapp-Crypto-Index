@@ -1,30 +1,22 @@
-import { useEffect, useState } from "react";
 import {
   CRYPTO_INDEX,
   CRYPTO_INDEX_MARKETPLACE,
 } from "../config/constants/contracts";
 import { useContract } from "./useContract";
 import CryptoIndexAbi from "../config/abi/IndexNFTNumerable.json";
+import { useQuery } from "react-query";
+import { isTokenApprove } from "../utils/calls/nftIndex";
 
-export const useTokenApprove = (tokenId: number, shouldUpdate: number) => {
-  const { contract: indexContract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
-  const [isApprove, setIsApprove] = useState(true);
+export const IS_TOKEN_APPROVE_QUERY_KEY = "isTokenApprove";
 
-  useEffect(() => {
-    (async () => {
-      if (indexContract) {
-        setIsApprove(true);
-        const approval = await indexContract.getApproved(tokenId);
-        if (approval !== CRYPTO_INDEX_MARKETPLACE) {
-          setIsApprove(false);
-        }
-      }
-    })();
+export const useIsTokenApprove = (tokenId: number) => {
+  const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
 
-    return () => {
-      setIsApprove(false);
-    };
-  }, [indexContract, tokenId, shouldUpdate]);
+  const { data } = useQuery(
+    [IS_TOKEN_APPROVE_QUERY_KEY],
+    () => isTokenApprove(contract?.getApproved, tokenId),
+    { enabled: !!contract?.getApproved }
+  );
 
-  return { isApprove };
+  return data === CRYPTO_INDEX_MARKETPLACE;
 };

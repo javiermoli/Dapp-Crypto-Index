@@ -4,7 +4,7 @@ import SkeletonCard from "../Skeleton/SkeletonCard";
 import Item from "./Item";
 
 interface ListProps {
-  nfts: any[];
+  nfts?: any[] | null;
   title?: string;
   renderChildren?: (nft: any) => ReactNode;
   isLoading: boolean;
@@ -16,19 +16,20 @@ const List: FC<ListProps> = ({
   renderChildren,
   isLoading,
 }) => {
-  const content = isLoading ? (
-    <SkeletonCard itemsQty={2} />
-  ) : nfts.length ? (
-    nfts.map((nft, index) => (
-      <Grid key={index} item xs={4}>
-        <Item nft={nft} renderChildren={renderChildren} />
-      </Grid>
-    ))
-  ) : (
-    <Typography sx={{ p: 2 }} component="div">
-      There are no items to display.
-    </Typography>
-  );
+  const content =
+    isLoading || !nfts ? (
+      <SkeletonCard itemsQty={2} />
+    ) : nfts?.length ? (
+      nfts.map((nft, index) => (
+        <Grid key={index} item xs={4}>
+          <Item nft={nft} renderChildren={renderChildren} />
+        </Grid>
+      ))
+    ) : (
+      <Typography sx={{ p: 2 }} component="div">
+        There are no items to display.
+      </Typography>
+    );
 
   return (
     <Box component="div" sx={{ p: 2 }}>

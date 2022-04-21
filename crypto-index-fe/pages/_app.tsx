@@ -4,16 +4,20 @@ import { Web3ReactProvider } from "@web3-react/core";
 import { getLibrary } from "../utils/web3";
 import Layout from "../components/Layout";
 import { SnackbarProvider } from "../contexts/SnackbarContext/Provider";
+import { queryClient } from "../utils/reactQuery";
+import { QueryClientProvider } from "react-query";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <SnackbarProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </SnackbarProvider>
-    </Web3ReactProvider>
+    <QueryClientProvider client={queryClient}>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <SnackbarProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </SnackbarProvider>
+      </Web3ReactProvider>
+    </QueryClientProvider>
   );
 }
 

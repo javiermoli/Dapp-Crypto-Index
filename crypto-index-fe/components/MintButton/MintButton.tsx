@@ -3,21 +3,19 @@ import CryptoIndexAbi from "../../config/abi/IndexNFTNumerable.json";
 import { CRYPTO_INDEX } from "../../config/constants/contracts";
 import useOwner from "../../hooks/useOwner";
 import { Box, Button, Typography } from "@mui/material";
-import { useFetchWithFeedback } from "../../hooks/useFetchWithFeedback";
+import { useMutations } from "../../hooks/useMutations";
+import useSnackbar from "../../hooks/useSnackbar";
+import { mint } from "../../utils/calls/nftIndex";
 
 const Mint = () => {
   const { contract } = useContract(CRYPTO_INDEX, CryptoIndexAbi);
   const { isOwner } = useOwner();
-  const [mintCallback] = useFetchWithFeedback({
-    loading: "Minting token..",
-    success: "The token has been minted!",
-  });
+  const mintRequest = useMutations(mint);
+  const { snackBarLoading } = useSnackbar();
 
   const mintNft = async () => {
-    if (contract?.mint) {
-      const mintRequest = contract.mint();
-      mintCallback(mintRequest);
-    }
+    snackBarLoading("Minting NFT...");
+    mintRequest({ contract });
   };
 
   return (

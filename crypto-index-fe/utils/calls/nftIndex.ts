@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers";
-import { formatBigNumber } from "../web3";
+import { formatBigNumber, getContract } from "../web3";
 import { multiCall } from "./multiCall";
 import { CRYPTO_INDEX } from "../../config/constants/contracts";
 import CryptoIndexAbi from "../../config/abi/IndexNFTNumerable.json";
@@ -69,14 +69,22 @@ export const getApproved = async (
   return approveAccount;
 };
 
-export const approveToken = async (
-  tokenId: number,
-  contract: ethers.Contract,
-  operator: string
-) => {
+export const approveToken = async (config: {
+  tokenId: number;
+  contract: ethers.Contract;
+  operator: string;
+}) => {
+  const { tokenId, contract, operator } = config;
   const approvedResponse = await contract?.approve(operator, tokenId);
+  const waiter = await approvedResponse.wait();
 
-  return approvedResponse;
+  return waiter;
+};
+
+export const isTokenApprove = async (getApproved: any, tokenId: number) => {
+  const approval = await getApproved(tokenId);
+
+  return approval;
 };
 
 export const burnNft = async (
@@ -84,17 +92,61 @@ export const burnNft = async (
   tokenId: number,
   convertToStableCoin: boolean
 ) => {
-  const approvedResponse = await contract.burnNFT(tokenId, convertToStableCoin);
+  const burnResponse = await contract.burnNFT(tokenId, convertToStableCoin);
+  const waiter = await burnResponse.wait();
 
-  return approvedResponse;
+  return waiter;
 };
 
-export const setTokenColor = async (
-  contract: ethers.Contract,
-  tokenId: number,
-  color: string
-) => {
-  const approvedResponse = await contract.setTokenColor(tokenId, color);
+export const setTokenColor = async (config: {
+  contract: ethers.Contract;
+  nftId: number;
+  tokenColor: string;
+}) => {
+  const { contract, nftId, tokenColor } = config;
+  const tokenColorResponse = await contract.setTokenColor(nftId, tokenColor);
+  const waiter = await tokenColorResponse.wait();
 
-  return approvedResponse;
+  return waiter;
+};
+
+export const mint = async (config: { contract: ethers.Contract }) => {
+  const { contract } = config;
+  const minting = await contract.mint();
+  const waiter = await minting.wait();
+
+  return waiter;
+};
+
+export const setNftURIs = async (config: {
+  contract: ethers.Contract;
+  uris: string[];
+}) => {
+  const { contract, uris } = config;
+  const settingUris = await contract.setTokenURIs(uris);
+  const waiter = await settingUris.wait();
+
+  return waiter;
+};
+
+export const fetchNfts = async (signer: any) => {
+  const contract = getContract(CRYPTO_INDEX, CryptoIndexAbi, signer);
+  const totalTokens = await contract.totalSupply();
+  const totalTokensFormatted = formatBigNumber(totalTokens);
+  const tokensIndexArr = Array.from(Array(totalTokensFormatted).keys());
+  const ids = await fetchNftByIndex(tokensIndexArr, signer);
+  const metadata = await fetchNftMetadata(ids, contract);
+
+  return metadata;
+};
+
+export const fetchMyNfts = async (signer: any, account: string) => {
+  const contract = getContract(CRYPTO_INDEX, CryptoIndexAbi, signer);
+  const totalTokens = await contract.balanceOf(account);
+  const totalTokensFormatted = formatBigNumber(totalTokens);
+  const tokensIndexArr = Array.from(Array(totalTokensFormatted).keys());
+  const ids = await fetchNftOfOwnerByIndex(tokensIndexArr, signer, account);
+  const metadata = await fetchNftMetadata(ids, contract);
+
+  return metadata;
 };

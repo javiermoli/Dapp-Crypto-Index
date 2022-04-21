@@ -19,3 +19,9 @@ export const injected = new InjectedConnector({
 
 export const formatBigNumber = (value: number | string | BigNumber) =>
   Number(formatUnits(value, "wei"));
+
+export const getContract = (
+  address: string,
+  abi: ethers.ContractInterface,
+  signer: any
+) => new ethers.Contract(address, abi, signer);
