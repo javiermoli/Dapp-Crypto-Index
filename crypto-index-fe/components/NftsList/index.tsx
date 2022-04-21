@@ -1,5 +1,5 @@
 import List from "../Common/NFTList/List";
-import useFetchNfts from "../../hooks/useFetchNfts";
+import { useFetchNfts } from "../../hooks/useFetchNfts";
 
 const NftsList = () => {
   const { data, isLoading } = useFetchNfts();

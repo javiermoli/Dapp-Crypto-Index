@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 
 export const NFTS_QUERY_KEY = "nftsList";
 
-const useFetchNfts = () => {
+export const useFetchNfts = () => {
   const { library } = useWeb3React();
   const signer = library?.getSigner();
 
@@ -15,5 +15,3 @@ const useFetchNfts = () => {
 
   return response;
 };
-
-export default useFetchNfts;
