@@ -9,7 +9,7 @@ import useFetchNftMyNfts, {
   MY_NFTS_QUERY_KEY,
 } from "../../hooks/useFetchNftMyNfts";
 import { useMutations } from "../../hooks/useMutations";
-import { NFTS_QUERY_KEY } from "../../hooks/useFetchNfts";
+import { NFTS_QUERY_KEY } from "../../hooks/useFetchNFTs";
 import useSnackbar from "../../hooks/useSnackbar";
 
 const MyNFTList = () => {
